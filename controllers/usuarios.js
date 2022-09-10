@@ -1,4 +1,4 @@
-const { response, request, query } = require("express"); // Response es una propiedad de express
+const { response, request } = require("express"); // Response es una propiedad de express
 const bcryptjs = require("bcryptjs"); // Paquete que nos permite encriptar la password.
 const Usuario = require("../models/usuario"); // El nombre de la variable se pone con la primera letra mayuscula por buenas practicas, por estandar...
 
