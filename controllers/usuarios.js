@@ -3,18 +3,17 @@ const bcryptjs = require("bcryptjs"); // Paquete que nos permite encriptar la pa
 const Usuario = require("../models/usuario"); // El nombre de la variable se pone con la primera letra mayuscula por buenas practicas, por estandar...
 
 const usuariosGet = async (req = request, res = response) => {
-  const {limite = 5, desde = 0} = req.query;
-  const query = {estado: true};
+  const { limite = 5, desde = 0 } = req.query;
+  const query = { estado: true };
 
-  const [total, usuarios] = await Promise.all([ // Este metodo permite almacenar promesas en un array y las ejecuta de manera simultanea, si alguna da error, todas dan error. Lo que está en la primera posición del array como variable es resultado de la primera promesa, y lo que está en segunda posición es resultado de la segunda promesa 
-     Usuario.countDocuments(query), // Metodo que realiza conteo de objetos almacenados como Usuario
-     Usuario.find(query)
-       .skip(Number(desde))
-       .limit(Number(limite))
-  ]) 
+  const [total, usuarios] = await Promise.all([
+    // Este metodo permite almacenar promesas en un array y las ejecuta de manera simultanea, si alguna da error, todas dan error. Lo que está en la primera posición del array como variable es resultado de la primera promesa, y lo que está en segunda posición es resultado de la segunda promesa
+    Usuario.countDocuments(query), // Metodo que realiza conteo de objetos almacenados como Usuario
+    Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
+  ]);
   res.json({
-   total,
-   usuarios
+    total,
+    usuarios,
   });
 };
 
@@ -30,7 +29,7 @@ const usuariosPost = async (req, res = response) => {
   //Guardar usuario en base de datos:
   await usuario.save();
 
-  res.json({usuario});
+  res.json({ usuario });
 };
 
 const usuariosPut = async (req, res = response) => {
@@ -43,21 +42,17 @@ const usuariosPut = async (req, res = response) => {
     resto.password = bcryptjs.hashSync(password, salt);
   }
 
-  const usuario = await Usuario.findByIdAndUpdate(id, resto) // el primer parametro indica al metodo que haga la busqueda por la propiedad "id" y el segundo parametro indica que el resto de las propiedades de usuario las actualice.
+  const usuario = await Usuario.findByIdAndUpdate(id, resto); // el primer parametro indica al metodo que haga la busqueda por la propiedad "id" y el segundo parametro indica que el resto de las propiedades de usuario las actualice.
 
   res.json(usuario);
 };
 
-const usuariosDelete = async(req, res = response) => {
-  const {id} = req.params;
+const usuariosDelete = async (req, res = response) => {
+  const { id } = req.params; // Aqui toma el id de los parametros enviados
 
-  // Borrado fisico/total de la base de datos:
-  // const usuario = await Usuario.findByIdAndDelete(id);
-
-  const usuario = await Usuario.findByIdAndUpdate(id, {estado:false});
+  const usuario = await Usuario.findByIdAndUpdate(id, { estado: false }); // actualiza el usuario a estado falso
 
   res.json(usuario);
-
 };
 
 const usuariosPatch = (req, res = response) => {

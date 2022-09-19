@@ -37,12 +37,14 @@ const UsuarioSchema = Schema({
     type: Boolean,
     default: false,
   },
+
 });
 
 UsuarioSchema.methods.toJSON = function () {
   // se debe utilizar la función normal, no puede ser funcion flecha porque la función flecha aplica lo que está adentro solo allí, no pasa de ahí, osea, solo local, en cambio la función normal lo hace de manera global
 
-  const { __v, password, ...usuario} = this.toObject; // Aqui estamos extrayendo las propiedades __V y password del objeto, y el resto de propiedades quedan almacenadas en el tercer parametro "usuario"
+  const { __v, password,_id, ...usuario} = this.toObject(); // Aqui estamos extrayendo las propiedades __V y password del objeto, y el resto de propiedades quedan almacenadas en el tercer parametro "usuario"
+  usuario.uid = _id; // Esto cambio el _id que genera el mongoose por defecto y lo convierte a variable uid.
   return usuario;
 };
 

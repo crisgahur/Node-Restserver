@@ -1,7 +1,17 @@
 const { Router } = require("express"); // Router es una propiedad de express
 const { check } = require("express-validator");
 
-const { validarCampos } = require("../middlewares/validar-campos");
+/* const { validarCampos } = require("../middlewares/validar-campos");
+const { validarJWT } = require("../middlewares/validar-jwt");
+const { esAdminRole, tieneRole } = require("../middlewares/validar-roles"); */
+
+const {
+  validarCampos,
+  validarJWT,
+  esAdminRole,
+  tieneRole,
+} = require("../middlewares"); // Al hacer la importacion de un archivo llamada index no es necesario especificar el archivo index, solo con especificar la carpeta es suficiente.
+
 const {
   esRoleValido,
   emailExiste,
@@ -48,11 +58,18 @@ router.post(
   usuariosPost
 );
 
-router.delete("/:id",[
-  check("id", "No es un ID valido").isMongoId(), // Metodo del express-validator que permite validar que ID's  sean en formato Mongo
-  check("id").custom(existeUsuarioPorId),
-  validarCampos,
-], usuariosDelete);
+router.delete(
+  "/:id",
+  [
+    validarJWT,
+    // esAdminRole,
+    tieneRole("ADMIN_ROLE", "VENTAS_ROLE", "USER_ROLE"),
+    check("id", "No es un ID valido").isMongoId(), // Metodo del express-validator que permite validar que ID's  sean en formato Mongo
+    check("id").custom(existeUsuarioPorId),
+    validarCampos,
+  ],
+  usuariosDelete
+);
 
 router.patch("/", usuariosPatch);
 
