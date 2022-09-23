@@ -28,13 +28,19 @@ Signout
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
+
+
+        var url = ( window.location.hostname.includes('localhost') )
+                    ? 'http://localhost:8080/api/auth/google'
+                    : 'https://restserver-curso-fher.herokuapp.com/api/auth/google';
+
         function handleCredentialResponse(response) {
             // Google token: ID_Token
            // console.log('id_token', response.credential);
 
            const body = {id_token: response.credential}; // Las credenciales que manda google las asignamos como id_token y como body.
 
-           fetch('http://localhost:8080/api/auth/google', {
+           fetch(url, {
             method: 'POST', // en el segundo parametro se debe especificar que tipo de endpoint es, sino toma por defecto GET
             headers: {
                 'Content-Type': 'application/json'
