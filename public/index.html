@@ -3,68 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Sign-in</title>
+    <title>Google Signin</title>
+
+    <meta name="google-signin-client_id" content="1023916028923-mnn067lcjn3itrr0lo8oj1s07kddgrcj.apps.googleusercontent.com">
+
 </head>
 <body>
-    <h1>Google Sign-in</h1>
+
+    <h1>Google Signin</h1>
     <hr>
-    <div id="g_id_onload"
-    data-client_id= "547685651295-n34jn0nlgb7qq0ol1mcdu8coj8gmntlp.apps.googleusercontent.com"
-    data-callback="handleCredentialResponse"
-    data-auto_prompt="false"
-    data-auto_select="true">
- </div>
- <div class="g_id_signin"
-    data-type="standard"
-    data-size="large"
-    data-theme="outline"
-    data-text="sign_in_with"
-    data-shape="rectangular"
-    data-logo_alignment="left">
- </div>
-<button id="google_signout" >
-Signout
-</button>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <a href="#" onclick="signOut();">Sign out</a>
 
     <script>
 
+        console.log(window.location.hostname.includes('localhost'))
 
         var url = ( window.location.hostname.includes('localhost') )
                     ? 'http://localhost:8080/api/auth/google'
                     : 'https://restserver-curso-fher.herokuapp.com/api/auth/google';
 
-        function handleCredentialResponse(response) {
-            // Google token: ID_Token
-           // console.log('id_token', response.credential);
 
-           const body = {id_token: response.credential}; // Las credenciales que manda google las asignamos como id_token y como body.
+        function onSignIn(googleUser) {
 
-           fetch(url, {
-            method: 'POST', // en el segundo parametro se debe especificar que tipo de endpoint es, sino toma por defecto GET
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify( body ) // Aqui estamos pidiendo que la respuesta la pase a un JSON
-           })
-           .then(r => r.json()) // Aqui pedimos que tome el formato JSON previamente parseado.
-           .then(resp => {
-            console.log(resp)
-            localStorage.setItem('email', resp.usuario.correo) // Guardamos en el local storage de la pagina el correo bajo la variable email.
-           })
-           .catch(console.warn);
+            var profile = googleUser.getBasicProfile();
+            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+            var id_token = googleUser.getAuthResponse().id_token;
+            const data = { id_token };
+
+            fetch( url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( data )
+            })
+            .then( resp => resp.json() )
+            .then( data => console.log( 'Nuestro server', data ) )
+            .catch( console.log );
+            
         }
 
-        const button = document.getElementById('google_signout');
-        button.onclick = () => {
-            console.log(google.accounts.id) // Propiedades de google sobre las cuentas de Google
-            google.accounts.id.disableAutoSelect(); 
-
-            google.accounts.id.revoke(localStorage.getItem('email'), done => { // creame un callback en el que hacemos la limpieza del local storage
-                localStorage.clear(); // Para limpiarlo
-                location.reload(); // Para recargar la pagina una vez se limpia.
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+            console.log('User signed out.');
             });
         }
-      </script>
+    </script>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
