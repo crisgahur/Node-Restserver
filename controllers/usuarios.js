@@ -32,13 +32,14 @@ const usuariosPost = async (req, res = response) => {
   res.json({ usuario });
 };
 
+//Actualiza información del usuario
 const usuariosPut = async (req, res = response) => {
-  const { id } = req.params;
-  const { _id, password, google, correo, ...resto } = req.body;
+  const { id } = req.params; // Tomamos el ID que se digitó en el postman
+  const { _id, password, google, correo, ...resto } = req.body; // // el body hace referencia a la información que envia el cliente al server, y lo que está escrito en la variable es qué variables del body queremos tomar y almacenar
 
   // TODO validar contra base da datos
   if (password) {
-    const salt = bcryptjs.genSaltSync();
+    const salt = bcryptjs.genSaltSync(); 
     resto.password = bcryptjs.hashSync(password, salt);
   }
 
