@@ -1,3 +1,3 @@
 # Webserver + Restserver
 
-Primero ejecutar `` npm install `` para reconstruir los modulos de node.
+First execute `` npm install `` to rebuild all the node modules.
